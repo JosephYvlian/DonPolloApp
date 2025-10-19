@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo - Panel de Administración</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_logout') }}">Cerrar Sesión</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-nav">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin_productos') }}">Productos</a>
+        <a href="{{ url_for('admin_pedidos') }}">Pedidos</a>
+        <a href="{{ url_for('admin_facturas') }}">Facturas</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="margin-bottom: 2rem;">Panel de Control</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 10px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">📦 Gestión de Productos</h3>
+            <p style="margin-bottom: 1.5rem; opacity: 0.9;">Administra el catálogo de productos, precios y stock disponible.</p>
+            <a href="{{ url_for('admin_productos') }}" class="btn" style="background: white; color: #667eea;">
+                Ver Productos
+            </a>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2rem; border-radius: 10px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">🛒 Pedidos</h3>
+            <p style="margin-bottom: 1.5rem; opacity: 0.9;">Visualiza todos los pedidos realizados por los clientes.</p>
+            <a href="{{ url_for('admin_pedidos') }}" class="btn" style="background: white; color: #f5576c;">
+                Ver Pedidos
+            </a>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 2rem; border-radius: 10px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">📄 Facturas</h3>
+            <p style="margin-bottom: 1.5rem; opacity: 0.9;">Consulta el registro completo de facturas generadas.</p>
+            <a href="{{ url_for('admin_facturas') }}" class="btn" style="background: white; color: #00f2fe;">
+                Ver Facturas
+            </a>
+        </div>
+    </div>
+    
+    <div style="margin-top: 3rem; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h3 style="margin-bottom: 1rem;">ℹ️ Información del Sistema</h3>
+        <p style="color: #666; line-height: 1.6;">
+            Bienvenido al panel de administración de Pollería El Buen Pollo. Desde aquí puedes gestionar 
+            todos los aspectos de tu negocio: agregar nuevos productos, controlar el inventario, 
+            revisar los pedidos de los clientes y consultar las facturas generadas.
+        </p>
+    </div>
+</div>
+{% endblock %}

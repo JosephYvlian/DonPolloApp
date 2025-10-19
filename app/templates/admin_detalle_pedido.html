@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo - Panel de Administración</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_logout') }}">Cerrar Sesión</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-nav">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin_productos') }}">Productos</a>
+        <a href="{{ url_for('admin_pedidos') }}" style="color: #FFD700;">Pedidos</a>
+        <a href="{{ url_for('admin_facturas') }}">Facturas</a>
+    </div>
+</div>
+
+<div class="container">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('admin_pedidos') }}" style="color: #FF6B35; text-decoration: none; font-weight: 500;">
+            ← Volver a Pedidos
+        </a>
+    </div>
+    
+    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h2 style="margin-bottom: 2rem;">Detalle del Pedido</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <h3 style="margin-bottom: 1rem; color: #FF6B35;">Información del Pedido</h3>
+                <p><strong>Número de Orden:</strong> {{ pedido[1] }}</p>
+                <p><strong>Fecha:</strong> {{ pedido[8] }}</p>
+                <p><strong>Estado:</strong> 
+                    <span style="padding: 0.3rem 0.8rem; border-radius: 5px; font-size: 0.85rem; font-weight: bold;">
+                        {{ pedido[7]|upper }}
+                    </span>
+                </p>
+                <p><strong>Método de Pago:</strong> {{ pedido[5]|capitalize }}</p>
+            </div>
+            
+            <div>
+                <h3 style="margin-bottom: 1rem; color: #FF6B35;">Datos del Cliente</h3>
+                <p><strong>Nombre:</strong> {{ pedido[2] }}</p>
+                <p><strong>Teléfono:</strong> {{ pedido[3] }}</p>
+                <p><strong>Dirección:</strong> {{ pedido[4] }}</p>
+            </div>
+        </div>
+        
+        <h3 style="margin: 2rem 0 1rem 0; color: #FF6B35;">Productos del Pedido</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in detalle %}
+                <tr>
+                    <td>{{ item[3] }}</td>
+                    <td>{{ item[4] }}</td>
+                    <td>${{ '{:,.0f}'.format(item[5]) }}</td>
+                    <td>${{ '{:,.0f}'.format(item[6]) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #f8f9fa;">
+                    <td colspan="3" style="text-align: right; font-weight: bold; font-size: 1.2rem;">Total:</td>
+                    <td style="font-weight: bold; color: #FF6B35; font-size: 1.2rem;">${{ '{:,.0f}'.format(pedido[6]) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

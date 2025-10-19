@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Inicio</a>
+            <a href="{{ url_for('carrito') }}">🛒 Carrito</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="margin-bottom: 2rem;">Mi Carrito de Compras</h2>
+    
+    {% if carrito %}
+        {% for item in carrito %}
+        <div class="carrito-item">
+            <div>
+                <h3>{{ item.nombre }}</h3>
+                <p style="color: #666;">Precio unitario: ${{ '{:,.0f}'.format(item.precio) }}</p>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <form action="{{ url_for('actualizar_carrito', producto_id=item.id) }}" method="POST" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" max="{{ item.stock }}" 
+                           style="width: 80px; padding: 0.5rem;" onchange="this.form.submit()">
+                </form>
+                
+                <div style="font-weight: bold; color: #FF6B35; font-size: 1.2rem;">
+                    ${{ '{:,.0f}'.format(item.precio * item.cantidad) }}
+                </div>
+                
+                <a href="{{ url_for('eliminar_carrito', producto_id=item.id) }}" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="total-box">
+            <h3>Total a pagar:</h3>
+            <div class="total-amount">${{ '{:,.0f}'.format(total) }}</div>
+            
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Seguir comprando</a>
+                <a href="{{ url_for('checkout') }}" class="btn btn-success">Proceder al pago</a>
+            </div>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <p style="font-size: 1.5rem; color: #666;">Tu carrito está vacío</p>
+            <a href="{{ url_for('index') }}" class="btn" style="margin-top: 1rem;">Ver productos</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

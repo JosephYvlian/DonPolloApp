@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Inicio</a>
+            <a href="{{ url_for('carrito') }}">
+                🛒 Carrito
+                {% if session.carrito %}
+                <span class="carrito-badge">{{ session.carrito|length }}</span>
+                {% endif %}
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">Nuestros Productos</h2>
+    
+    <div class="productos-grid">
+        {% for producto in productos %}
+        <div class="producto-card">
+            <div class="producto-imagen">🍗</div>
+            <div class="producto-nombre">{{ producto[1] }}</div>
+            <div class="producto-descripcion">{{ producto[2] }}</div>
+            <div class="producto-precio">${{ '{:,.0f}'.format(producto[3]) }}</div>
+            <div class="producto-stock">Stock disponible: {{ producto[4] }} unidades</div>
+            
+            <form action="{{ url_for('agregar_carrito', producto_id=producto[0]) }}" method="POST">
+                <button type="submit" class="btn" style="width: 100%;">Agregar al carrito</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

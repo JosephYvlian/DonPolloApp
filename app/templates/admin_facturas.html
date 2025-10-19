@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo - Panel de Administración</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_logout') }}">Cerrar Sesión</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-nav">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin_productos') }}">Productos</a>
+        <a href="{{ url_for('admin_pedidos') }}">Pedidos</a>
+        <a href="{{ url_for('admin_facturas') }}" style="color: #FFD700;">Facturas</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="margin-bottom: 2rem;">Registro de Facturas</h2>
+    
+    {% if facturas %}
+    <table>
+        <thead>
+            <tr>
+                <th>Número de Factura</th>
+                <th>Número de Orden</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for factura in facturas %}
+            <tr>
+                <td><strong>{{ factura[2] }}</strong></td>
+                <td>{{ factura[4] }}</td>
+                <td>{{ factura[5] }}</td>
+                <td>${{ '{:,.0f}'.format(factura[6]) }}</td>
+                <td>{{ factura[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: white; border-radius: 8px;">
+        <p style="font-size: 1.2rem; color: #666;">No hay facturas registradas</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

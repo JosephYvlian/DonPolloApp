@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo - Panel de Administración</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_logout') }}">Cerrar Sesión</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-nav">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin_productos') }}" style="color: #FFD700;">Productos</a>
+        <a href="{{ url_for('admin_pedidos') }}">Pedidos</a>
+        <a href="{{ url_for('admin_facturas') }}">Facturas</a>
+    </div>
+</div>
+
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2>Gestión de Productos</h2>
+        <a href="{{ url_for('admin_agregar_producto') }}" class="btn btn-success">+ Agregar Producto</a>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto[0] }}</td>
+                <td>{{ producto[1] }}</td>
+                <td>{{ producto[2] }}</td>
+                <td>${{ '{:,.0f}'.format(producto[3]) }}</td>
+                <td>
+                    <span>
+                        {{ producto[4] }} unidades
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ url_for('admin_editar_producto', producto_id=producto[0]) }}" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-right: 0.5rem;">Editar</a>
+                    <a href="{{ url_for('admin_eliminar_producto', producto_id=producto[0]) }}" 
+                       class="btn btn-danger" 
+                       style="padding: 0.5rem 1rem; font-size: 0.9rem;"
+                       onclick="return confirm('¿Estás seguro de eliminar este producto?')">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

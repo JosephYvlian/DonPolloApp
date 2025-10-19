@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Inicio</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="confirmacion-box">
+        <div class="success-icon">✅</div>
+        
+        <h2 style="text-align: center; color: #28a745; margin-bottom: 1rem;">
+            ¡Pedido Realizado con Éxito!
+        </h2>
+        
+        <div class="orden-numero">
+            Orden #{{ pedido[1] }}
+        </div>
+        
+        <div style="text-align: center; margin: 2rem 0; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+            <h3 style="margin-bottom: 1rem;">Datos del Pedido</h3>
+            <p><strong>Cliente:</strong> {{ pedido[2] }}</p>
+            <p><strong>Teléfono:</strong> {{ pedido[3] }}</p>
+            <p><strong>Dirección:</strong> {{ pedido[4] }}</p>
+            <p><strong>Método de pago:</strong> {{ pedido[5] }}</p>
+            <p><strong>Fecha:</strong> {{ pedido[8] }}</p>
+        </div>
+        
+        <h3 style="margin: 2rem 0 1rem 0;">Detalle de Productos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unit.</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in detalle %}
+                <tr>
+                    <td>{{ item[3] }}</td>
+                    <td>{{ item[4] }}</td>
+                    <td>${{ '{:,.0f}'.format(item[5]) }}</td>
+                    <td>${{ '{:,.0f}'.format(item[6]) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #f8f9fa;">
+                    <td colspan="3" style="text-align: right; font-weight: bold; font-size: 1.2rem;">Total:</td>
+                    <td style="font-weight: bold; color: #FF6B35; font-size: 1.2rem;">${{ '{:,.0f}'.format(pedido[6]) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div style="margin-top: 2rem; padding: 1.5rem; background: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb;">
+            <h4 style="color: #155724; margin-bottom: 0.5rem;">Factura Generada</h4>
+            <p style="color: #155724; margin: 0;">
+                <strong>Número de Factura:</strong> {{ pedido[9] }}
+            </p>
+        </div>
+        
+        <div style="margin-top: 2rem; text-align: center;">
+            <p style="color: #666; margin-bottom: 1rem;">
+                Hemos recibido tu pedido y lo procesaremos lo antes posible. 
+                Recibirás tu orden en la dirección indicada.
+            </p>
+            <a href="{{ url_for('index') }}" class="btn">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

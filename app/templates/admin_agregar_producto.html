@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo - Panel de Administración</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_logout') }}">Cerrar Sesión</a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-nav">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin_productos') }}" style="color: #FFD700;">Productos</a>
+        <a href="{{ url_for('admin_pedidos') }}">Pedidos</a>
+        <a href="{{ url_for('admin_facturas') }}">Facturas</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="margin-bottom: 2rem;">Agregar Nuevo Producto</h2>
+    
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 600px;">
+        <form action="{{ url_for('admin_agregar_producto') }}" method="POST">
+            <div class="form-group">
+                <label for="nombre">Nombre del Producto *</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="precio">Precio *</label>
+                <input type="number" id="precio" name="precio" step="0.01" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="stock">Stock Inicial *</label>
+                <input type="number" id="stock" name="stock" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="imagen">Nombre de Imagen</label>
+                <input type="text" id="imagen" name="imagen" placeholder="producto.jpg" value="producto.jpg">
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-success" style="flex: 1;">Guardar Producto</button>
+                <a href="{{ url_for('admin_productos') }}" class="btn btn-secondary" style="flex: 1;">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

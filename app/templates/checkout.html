@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="navbar">
+    <div class="navbar-content">
+        <h1>🐔 Don Pollo</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Inicio</a>
+            <a href="{{ url_for('carrito') }}">🛒 Carrito</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2 style="margin-bottom: 2rem;">Finalizar Compra</h2>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <h3 style="margin-bottom: 1.5rem;">Datos de Entrega</h3>
+                
+                <form action="{{ url_for('procesar_pedido') }}" method="POST">
+                    <div class="form-group">
+                        <label for="nombre">Nombre completo *</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefono">Teléfono *</label>
+                        <input type="tel" id="telefono" name="telefono" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="direccion">Dirección de entrega *</label>
+                        <textarea id="direccion" name="direccion" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="metodo_pago">Método de pago *</label>
+                        <select id="metodo_pago" name="metodo_pago" required>
+                            <option value="">Seleccione un método</option>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="tarjeta">Tarjeta de crédito/débito</option>
+                            <option value="transferencia">Transferencia bancaria</option>
+                            <option value="pse">PSE</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+                        Confirmar Pedido
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div>
+            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <h3 style="margin-bottom: 1.5rem;">Resumen del Pedido</h3>
+                
+                {% for item in carrito %}
+                <div style="display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #eee;">
+                    <div>
+                        <div style="font-weight: bold;">{{ item.nombre }}</div>
+                        <div style="color: #666; font-size: 0.9rem;">Cantidad: {{ item.cantidad }}</div>
+                    </div>
+                    <div style="font-weight: bold; color: #FF6B35;">
+                        ${{ '{:,.0f}'.format(item.precio * item.cantidad) }}
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div style="margin-top: 2rem; padding-top: 1rem; border-top: 2px solid #FF6B35;">
+                    <div style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold;">
+                        <span>Total:</span>
+                        <span style="color: #FF6B35;">${{ '{:,.0f}'.format(total) }}</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: #fff3cd; border-radius: 5px; border: 1px solid #ffc107;">
+                    <p style="margin: 0; color: #856404; font-size: 0.9rem;">
+                        El pago será simulado y no se realizará ningún cargo real.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
