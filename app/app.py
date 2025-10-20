@@ -1,5 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 from datetime import datetime
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.units import inch
+from io import BytesIO
 import sqlite3
 import secrets
 
@@ -67,7 +73,7 @@ def init_db():
     c.execute("INSERT OR IGNORE INTO admin (usuario, password) VALUES (?, ?)", 
               ('admin', 'admin123'))
     
-    # Insertar productos
+    # Insertar productos de ejemplo si no existen
     c.execute("SELECT COUNT(*) FROM productos")
     if c.fetchone()[0] == 0:
         productos_ejemplo = [
@@ -84,15 +90,27 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Ruta principal - Catálogo de productos
+# Ruta principal - Catálogo de productos con búsqueda
 @app.route('/')
 def index():
+    busqueda = request.args.get('buscar', '').strip()
+    
     conn = sqlite3.connect('polleria.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM productos WHERE stock > 0")
+    
+    if busqueda:
+        # Buscar en nombre o descripción (case insensitive)
+        query = """SELECT * FROM productos 
+                   WHERE stock > 0 
+                   AND (LOWER(nombre) LIKE LOWER(?) OR LOWER(descripcion) LIKE LOWER(?))"""
+        c.execute(query, (f'%{busqueda}%', f'%{busqueda}%'))
+    else:
+        c.execute("SELECT * FROM productos WHERE stock > 0")
+    
     productos = c.fetchall()
     conn.close()
-    return render_template('index.html', productos=productos)
+    
+    return render_template('index.html', productos=productos, busqueda=busqueda)
 
 # Agregar al carrito
 @app.route('/agregar_carrito/<int:producto_id>', methods=['POST'])
@@ -394,6 +412,96 @@ def admin_facturas():
 def admin_logout():
     session.pop('admin', None)
     return redirect(url_for('index'))
+
+# Descargar reporte de facturas en PDF
+@app.route('/admin/facturas/descargar_pdf')
+def admin_descargar_pdf_facturas():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+    
+    # Crear buffer de memoria para el PDF
+    buffer = BytesIO()
+    
+    # Crear el PDF
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    
+    # Título
+    title = Paragraph("<b>Don Pollo</b>", styles['Title'])
+    elements.append(title)
+    elements.append(Spacer(1, 0.2*inch))
+    
+    subtitle = Paragraph(f"<b>Reporte de Facturas</b><br/>Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M')}", styles['Heading2'])
+    elements.append(subtitle)
+    elements.append(Spacer(1, 0.3*inch))
+    
+    # Obtener datos de facturas
+    conn = sqlite3.connect('polleria.db')
+    c = conn.cursor()
+    c.execute('''SELECT f.numero_factura, p.numero_orden, p.cliente_nombre, p.total, f.fecha 
+                 FROM facturas f 
+                 JOIN pedidos p ON f.pedido_id = p.id 
+                 ORDER BY f.fecha DESC''')
+    facturas = c.fetchall()
+    conn.close()
+    
+    if facturas:
+        # Crear tabla
+        data = [['Nro. Factura', 'Nro. Orden', 'Cliente', 'Total', 'Fecha']]
+        
+        total_general = 0
+        for factura in facturas:
+            data.append([
+                factura[0],
+                factura[1],
+                factura[2],
+                f"${factura[3]:,.0f}",
+                factura[4]
+            ])
+            total_general += factura[3]
+        
+        # Agregar fila de total
+        data.append(['', '', 'TOTAL GENERAL:', f"${total_general:,.0f}", ''])
+        
+        # Crear y estilizar tabla
+        table = Table(data, colWidths=[2*inch, 2*inch, 2*inch, 1.5*inch, 1.5*inch])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#FF6B35')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+            ('FONTSIZE', (0, 1), (-1, -1), 10),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.HexColor('#f8f9fa')]),
+        ]))
+        
+        elements.append(table)
+        elements.append(Spacer(1, 0.3*inch))
+        
+        # Resumen
+        resumen = Paragraph(f"<b>Total de facturas:</b> {len(facturas)}", styles['Normal'])
+        elements.append(resumen)
+    else:
+        no_data = Paragraph("No hay facturas registradas en el sistema.", styles['Normal'])
+        elements.append(no_data)
+    
+    # Generar PDF
+    doc.build(elements)
+    
+    # Preparar respuesta
+    buffer.seek(0)
+    response = make_response(buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=reporte_facturas_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf'
+    
+    return response
 
 if __name__ == '__main__':
     init_db()

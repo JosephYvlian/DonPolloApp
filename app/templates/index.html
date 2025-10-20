@@ -17,8 +17,29 @@
 </div>
 
 <div class="container">
-    <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">Nuestros Productos</h2>
+    <h2 style="text-align: center; margin-bottom: 1.5rem; color: #333;">Nuestros Productos</h2>
     
+    <!-- Buscador -->
+    <div style="max-width: 600px; margin: 0 auto 2rem auto;">
+        <form action="{{ url_for('index') }}" method="GET" style="display: flex; gap: 0.5rem;">
+            <input type="text" 
+                   name="buscar" 
+                   placeholder="Buscar productos por nombre o descripción..." 
+                   value="{{ busqueda if busqueda else '' }}"
+                   style="flex: 1; padding: 0.8rem; border: 2px solid #FF6B35; border-radius: 5px; font-size: 1rem;">
+            <button type="submit" class="btn" style="padding: 0.8rem 2rem;">🔍 Buscar</button>
+            {% if busqueda %}
+            <a href="{{ url_for('index') }}" class="btn btn-secondary" style="padding: 0.8rem 1rem;">✕</a>
+            {% endif %}
+        </form>
+        {% if busqueda %}
+        <p style="text-align: center; margin-top: 1rem; color: #666;">
+            Resultados para: <strong>"{{ busqueda }}"</strong>
+        </p>
+        {% endif %}
+    </div>
+    
+    {% if productos %}
     <div class="productos-grid">
         {% for producto in productos %}
         <div class="producto-card">
@@ -34,5 +55,14 @@
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: white; border-radius: 8px; margin-top: 2rem;">
+        <p style="font-size: 1.5rem; color: #666; margin-bottom: 1rem;">😔 No se encontraron productos</p>
+        {% if busqueda %}
+        <p style="color: #999; margin-bottom: 1.5rem;">Intenta con otra búsqueda</p>
+        <a href="{{ url_for('index') }}" class="btn">Ver todos los productos</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

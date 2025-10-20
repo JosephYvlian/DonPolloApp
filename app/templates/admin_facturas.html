@@ -20,7 +20,12 @@
 </div>
 
 <div class="container">
-    <h2 style="margin-bottom: 2rem;">Registro de Facturas</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2>Registro de Facturas</h2>
+        <a href="{{ url_for('admin_descargar_pdf_facturas') }}" class="btn btn-success">
+            Descargar Reporte PDF
+        </a>
+    </div>
     
     {% if facturas %}
     <table>
